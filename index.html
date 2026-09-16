@@ -8,10 +8,10 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: linear-gradient(135deg, #1e3c72, #2a5298); min-height: 100vh; display: flex; justify-content: center; align-items: center; color: #333; padding: 20px; }
         
-        .card { background: white; padding: 40px; border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); text-align: center; max-width: 700px; width: 100%; position: relative; overflow: hidden; }
+        .card { background: white; padding: 35px 40px; border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); text-align: center; max-width: 700px; width: 100%; position: relative; overflow: hidden; }
         
         /* En-tête : Langue & Discord */
-        .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 10px; }
+        .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 10px; }
         .lang-container { display: flex; justify-content: flex-end; align-items: center; gap: 10px; }
         .lang-label { font-weight: 800; color: #00b4d8; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; }
         .lang-select { 
@@ -67,14 +67,14 @@
         }
         .btn-discord svg { width: 18px; height: 18px; fill: currentColor; flex-shrink: 0; }
 
-        .logo-container { display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 20px; }
-        .logo-svg { width: 70px; height: 70px; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.15)); transition: transform 0.3s ease; }
+        .logo-container { display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 15px; }
+        .logo-svg { width: 60px; height: 60px; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.15)); transition: transform 0.3s ease; }
         .logo-container:hover .logo-svg { transform: rotate(10deg) scale(1.05); }
-        .logo-text { font-size: 2.5rem; font-weight: 900; background: linear-gradient(45deg, #1e3c72, #00b4d8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.5px; text-transform: uppercase; }
+        .logo-text { font-size: 2.2rem; font-weight: 900; background: linear-gradient(45deg, #1e3c72, #00b4d8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.5px; text-transform: uppercase; }
         .logo-text span { color: #00b4d8; -webkit-text-fill-color: #00b4d8; }
 
-        .difficulty-container { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
-        .btn-diff { padding: 16px; font-size: 1.1rem; font-weight: bold; border: none; border-radius: 12px; cursor: pointer; color: white; transition: transform 0.2s, opacity 0.2s, box-shadow 0.2s; }
+        .difficulty-container { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+        .btn-diff { padding: 11px; font-size: 1rem; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; color: white; transition: transform 0.2s, opacity 0.2s, box-shadow 0.2s; }
         .btn-diff:hover { transform: translateY(-2px); opacity: 0.95; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
         
         .lvl1 { background-color: #48cae4; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
@@ -124,17 +124,18 @@
         .next-btn { display: none; }
         .restart-btn { margin-top: 20px; background-color: #28a745; }
         
-        .scoreboard { margin-bottom: 25px; background: #e0f7fa; border-radius: 16px; padding: 20px; border: 2px solid #00b4d8; }
-        .scoreboard h3 { margin-bottom: 12px; color: #1e3c72; font-size: 1.2rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+        /* Tableau des scores ajusté sans barre de défilement */
+        .scoreboard { margin-bottom: 12px; background: #e0f7fa; border-radius: 14px; padding: 10px 15px; border: 2px solid #00b4d8; }
+        .scoreboard h3 { margin-bottom: 6px; color: #1e3c72; font-size: 1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
         .score-table { width: 100%; border-collapse: collapse; text-align: left; }
-        .score-table th, .score-table td { padding: 8px 12px; border-bottom: 1px solid #b2ebf2; font-size: 1rem; color: #1e3c72; }
-        .score-table th { background-color: #00b4d8; color: white; font-size: 0.9rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
-        .score-table th:first-child { border-top-left-radius: 8px; }
-        .score-table th:last-child { border-top-right-radius: 8px; }
+        .score-table th, .score-table td { padding: 4px 8px; border-bottom: 1px solid #b2ebf2; font-size: 0.9rem; color: #1e3c72; }
+        .score-table th { background-color: #00b4d8; color: white; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+        .score-table th:first-child { border-top-left-radius: 6px; }
+        .score-table th:last-child { border-top-right-radius: 6px; }
         .score-table tr:last-child td { border-bottom: none; }
         .score-table td strong { color: #00b4d8; }
 
-        .instruction-text { color: #1e3c72; font-size: 1.1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+        .instruction-text { color: #1e3c72; font-size: 0.95rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
 
         .screen { display: none; }
         .active { display: block; }
@@ -394,7 +395,7 @@
             { code: "fi", fr: "Finlande", en: "Finland", es: "Finlandia", de: "Finnland", pt: "Finlândia", lvl: 2 },
             { code: "dk", fr: "Danemark", en: "Denmark", es: "Dinamarca", de: "Dänemark", pt: "Dinamarca", lvl: 2 },
             { code: "cl", fr: "Chili", en: "Chile", es: "Chile", de: "Chile", pt: "Chile", lvl: 2 },
-            { code: "dz", fr: "Algérie", en: "Algeria", es: "Argelia", de: "Algerien", pt: "Argélia", lvl: 2 },
+            { code: "dz", fr: "Algérie", en: "Algeria", es: "Argelia", de: "Algerien", pt: "Algélia", lvl: 2 },
             { code: "co", fr: "Colombie", en: "Colombia", es: "Colombia", de: "Kolumbien", pt: "Colômbia", lvl: 2 },
             { code: "nl", fr: "Pays-Bas", en: "Netherlands", es: "Países Bajos", de: "Niederlande", pt: "Países Baixos", lvl: 2 },
             { code: "pl", fr: "Pologne", en: "Poland", es: "Polonia", de: "Polen", pt: "Polónia", lvl: 2 },
@@ -470,10 +471,18 @@
 
         function getLocalizedDatasets() {
             const datasets = { 1: [], 2: [], 3: [], 4: [], 5: [] };
+            const seenCodes = new Set();
+
             rawFlagsData.forEach(item => {
-                const flagObj = { code: item.code, name: item[currentLang] || item.en };
-                datasets[item.lvl].push(flagObj);
+                if (!seenCodes.has(item.code)) {
+                    seenCodes.add(item.code);
+                    const flagObj = { code: item.code, name: item[currentLang] || item.en };
+                    if (datasets[item.lvl]) {
+                        datasets[item.lvl].push(flagObj);
+                    }
+                }
             });
+
             const allFlags = [...datasets[1], ...datasets[2], ...datasets[3], ...datasets[4], ...datasets[5]];
             datasets[6] = allFlags;
             return { datasets, allFlags };
@@ -546,9 +555,10 @@
             tbody.innerHTML = '';
 
             const txt = i18n[currentLang];
+            const { datasets } = getLocalizedDatasets();
 
             for (let i = 1; i <= 6; i++) {
-                const maxLvlScore = (i === 6) ? 85 : 10;
+                const maxLvlScore = (i === 6) ? datasets[6].length : 10;
                 const savedScore = sessionStorage.getItem(`quizzy_best_lvl${i}`);
                 const scoreDisplay = savedScore !== null ? `${savedScore} / ${maxLvlScore}` : '-';
 
@@ -653,7 +663,6 @@
             const rect = buttonElement.getBoundingClientRect();
             const parentRect = buttonElement.parentElement.getBoundingClientRect();
             
-            // Centre du bouton par rapport au conteneur des options
             const centerX = (rect.left + rect.width / 2) - parentRect.left;
             const centerY = (rect.top + rect.height / 2) - parentRect.top;
 
@@ -662,11 +671,9 @@
                 confetti.classList.add('confetti');
                 confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
                 
-                // Position de départ (centre du bouton)
                 confetti.style.left = `${centerX}px`;
                 confetti.style.top = `${centerY}px`;
 
-                // Direction aléatoire en étoile (angle et distance)
                 const angle = Math.random() * Math.PI * 2;
                 const distance = 40 + Math.random() * 70;
                 const tx = Math.cos(angle) * distance;
@@ -677,7 +684,6 @@
 
                 buttonElement.parentElement.appendChild(confetti);
 
-                // Suppression après l'animation
                 setTimeout(() => {
                     confetti.remove();
                 }, 600);
@@ -692,7 +698,7 @@
                 selectedBtn.classList.add('correct');
                 score++;
                 document.getElementById('score').textContent = score;
-                triggerConfetti(selectedBtn); // Déclenchement des confettis autour du bon bouton
+                triggerConfetti(selectedBtn);
             } else {
                 selectedBtn.classList.add('wrong');
                 revealCorrectAnswer();
@@ -721,11 +727,6 @@
             }
         }
 
-        function nextQuestion() {
-            currentQuestionIndex++;
-            loadQuestion();
-        }
-
         function saveHighScore() {
             checkDailyReset();
             const storageKey = `quizzy_best_lvl${currentDifficulty}`;
@@ -751,6 +752,11 @@
             else if (ratio >= 0.7) feedback.textContent = txt.fbGreat;
             else if (ratio >= 0.5) feedback.textContent = txt.fbGood;
             else feedback.textContent = txt.fbTryAgain;
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            loadQuestion();
         }
 
         // Init
