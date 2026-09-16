@@ -1,767 +1,648 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quizzy Quiz</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: linear-gradient(135deg, #1e3c72, #2a5298); min-height: 100vh; display: flex; justify-content: center; align-items: center; color: #333; padding: 20px; }
-        
-        .card { background: white; padding: 35px 40px; border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); text-align: center; max-width: 700px; width: 100%; position: relative; overflow: hidden; }
-        
-        /* En-tête : Langue & Discord */
-        .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 10px; }
-        .lang-container { display: flex; justify-content: flex-end; align-items: center; gap: 10px; }
-        .lang-label { font-weight: 800; color: #00b4d8; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; }
-        .lang-select { 
-            padding: 8px 14px; 
-            font-size: 0.95rem; 
-            font-weight: 700; 
-            border-radius: 12px; 
-            border: 2px solid #00b4d8; 
-            background: #00b4d8; 
-            color: #ffffff; 
-            cursor: pointer; 
-            outline: none; 
-            box-shadow: 0 4px 10px rgba(0, 180, 216, 0.25);
-            transition: all 0.2s ease;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            text-align: center;
-        }
-        .lang-select:hover {
-            background-color: #48cae4;
-            border-color: #48cae4;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 14px rgba(0, 180, 216, 0.35);
-        }
-        .lang-select option {
-            background-color: #ffffff;
-            color: #1e3c72;
-            font-weight: 600;
-        }
-
-        /* Bouton Discord */
-        .btn-discord {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background-color: #00b4d8;
-            border: 2px solid #00b4d8;
-            color: #ffffff;
-            padding: 8px 14px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 0.95rem;
-            text-decoration: none;
-            box-shadow: 0 4px 10px rgba(0, 180, 216, 0.25);
-            transition: all 0.2s ease;
-        }
-        .btn-discord:hover {
-            background-color: #48cae4;
-            border-color: #48cae4;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 14px rgba(0, 180, 216, 0.35);
-        }
-        .btn-discord svg { width: 18px; height: 18px; fill: currentColor; flex-shrink: 0; }
-
-        .logo-container { display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 15px; }
-        .logo-svg { width: 60px; height: 60px; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.15)); transition: transform 0.3s ease; }
-        .logo-container:hover .logo-svg { transform: rotate(10deg) scale(1.05); }
-        .logo-text { font-size: 2.2rem; font-weight: 900; background: linear-gradient(45deg, #1e3c72, #00b4d8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.5px; text-transform: uppercase; }
-        .logo-text span { color: #00b4d8; -webkit-text-fill-color: #00b4d8; }
-
-        .difficulty-container { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-        .btn-diff { padding: 11px; font-size: 1rem; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; color: white; transition: transform 0.2s, opacity 0.2s, box-shadow 0.2s; }
-        .btn-diff:hover { transform: translateY(-2px); opacity: 0.95; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-        
-        .lvl1 { background-color: #48cae4; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
-        .lvl2 { background-color: #00b4d8; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
-        .lvl3 { background-color: #0096c7; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
-        .lvl4 { background-color: #0077b6; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
-        .lvl5 { background-color: #023e8a; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
-        .lvl6 { background-color: #03045e; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
-        
-        .stats { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 1.1rem; font-weight: bold; color: #555; }
-        .timer-display { font-size: 1.2rem; color: #dc3545; font-weight: 800; background: #ffe3e3; padding: 4px 12px; border-radius: 20px; border: 1px solid #ffc9c9; }
-        
-        .timer-bar-bg { width: 100%; height: 10px; background-color: #eee; border-radius: 5px; margin-bottom: 25px; overflow: hidden; }
-        .timer-bar-fill { height: 100%; width: 100%; background-color: #00b4d8; transition: width 0.1s linear; }
-        
-        .flag-container { height: 260px; display: flex; align-items: center; justify-content: center; margin-bottom: 30px; }
-        .flag-img { max-height: 100%; max-width: 100%; border-radius: 12px; box-shadow: 0 6px 12px rgba(0,0,0,0.2); border: 1px solid #ddd; object-fit: contain; }
-        
-        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 25px; position: relative; }
-        .btn { background-color: #00b4d8; border: 2px solid #0096c7; padding: 16px 20px; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2); position: relative; }
-        .btn:hover:not([disabled]) { background-color: #48cae4; border-color: #00b4d8; transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
-        .btn.correct { background-color: #28a745 !important; color: white !important; border-color: #28a745 !important; }
-        .btn.wrong { background-color: #dc3545 !important; color: white !important; border-color: #dc3545 !important; }
-
-        /* Styles des micro-confettis */
-        .confetti {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            pointer-events: none;
-            animation: explode 0.6s ease-out forwards;
-        }
-
-        @keyframes explode {
-            0% {
-                transform: translate(0, 0) scale(1);
-                opacity: 1;
-            }
-            100% {
-                transform: translate(var(--tx), var(--ty)) scale(0.3);
-                opacity: 0;
-            }
-        }
-
-        .next-btn, .restart-btn { width: 100%; padding: 16px; background-color: #1e3c72; color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
-        .next-btn { display: none; }
-        .restart-btn { margin-top: 20px; background-color: #28a745; }
-        
-        /* Tableau des scores ajusté sans barre de défilement */
-        .scoreboard { margin-bottom: 12px; background: #e0f7fa; border-radius: 14px; padding: 10px 15px; border: 2px solid #00b4d8; }
-        .scoreboard h3 { margin-bottom: 6px; color: #1e3c72; font-size: 1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
-        .score-table { width: 100%; border-collapse: collapse; text-align: left; }
-        .score-table th, .score-table td { padding: 4px 8px; border-bottom: 1px solid #b2ebf2; font-size: 0.9rem; color: #1e3c72; }
-        .score-table th { background-color: #00b4d8; color: white; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
-        .score-table th:first-child { border-top-left-radius: 6px; }
-        .score-table th:last-child { border-top-right-radius: 6px; }
-        .score-table tr:last-child td { border-bottom: none; }
-        .score-table td strong { color: #00b4d8; }
-
-        .instruction-text { color: #1e3c72; font-size: 0.95rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
-
-        .screen { display: none; }
-        .active { display: block; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pronos Of Champions - Saison 2026-2027</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+    body {
+      background-color: #0f172a;
+      color: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    header {
+      width: 100%;
+      max-width: 650px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      background: #1e293b;
+      padding: 15px 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      border: 1px solid #334155;
+    }
+    header h1 {
+      color: #38bdf8;
+      font-size: 1.5rem;
+    }
+    .lang-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .lang-selector {
+      background: #0f172a;
+      color: #f8fafc;
+      border: 1px solid #475569;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.2s, background-color 0.2s;
+      
+      /* Suppression de la flèche native */
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      text-align-last: center;
+      padding-right: 12px;
+    }
+    .lang-selector:hover {
+      border-color: #38bdf8;
+      background-color: #1e293b;
+    }
+    .container {
+      width: 100%;
+      max-width: 650px;
+    }
+    .card {
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      border: 1px solid #334155;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    .card h2 {
+      font-size: 1.2rem;
+      color: #38bdf8;
+      margin-bottom: 12px;
+    }
+    .form-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    input[type="text"] {
+      flex: 1;
+      padding: 10px 12px;
+      border-radius: 6px;
+      border: 1px solid #475569;
+      background: #0f172a;
+      color: #fff;
+      font-size: 0.95rem;
+      outline: none;
+    }
+    input[type="text"]:focus {
+      border-color: #38bdf8;
+    }
+    input::placeholder {
+      color: #64748b;
+    }
+    .btn {
+      background-color: #0284c7;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn:hover {
+      background-color: #0369a1;
+    }
+    .btn-reset {
+      background-color: #475569;
+      font-size: 0.85rem;
+      padding: 6px 12px;
+    }
+    .btn-reset:hover {
+      background-color: #334155;
+    }
+    .match-card {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      position: relative;
+    }
+    .match-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: #38bdf8;
+      font-weight: bold;
+      margin-bottom: 12px;
+    }
+    .match-datetime {
+      color: #38bdf8;
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+    .competition-badge {
+      background: #0284c7;
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+    }
+    .teams-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    .team-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 40%;
+      text-align: center;
+    }
+    .team-name {
+      font-weight: bold;
+      font-size: 1rem;
+      color: #f8fafc;
+      margin-bottom: 8px;
+    }
+    .team-logo-container {
+      width: 55px;
+      height: 55px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .team-logo {
+      max-width: 55px;
+      max-height: 55px;
+      object-fit: contain;
+    }
+    .lask-logo-svg, .sabah-logo-svg {
+      width: 50px;
+      height: 55px;
+      object-fit: contain;
+    }
+    .vs {
+      color: #64748b;
+      font-size: 0.9rem;
+      font-weight: bold;
+    }
+    .match-middle-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin-bottom: 12px;
+    }
+    .inputs-score {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+    .input-score {
+      width: 55px;
+      height: 45px;
+      text-align: center;
+      font-size: 1.3rem;
+      font-weight: bold;
+      border-radius: 6px;
+      border: 2px solid #38bdf8;
+      background: #1e293b;
+      color: #fff;
+      outline: none;
+    }
+    .btn-delete {
+      position: absolute;
+      right: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #ef4444;
+      padding: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      transition: background 0.2s;
+    }
+    .btn-delete:hover {
+      background-color: rgba(239, 68, 68, 0.15);
+    }
+    .btn-delete svg {
+      width: 22px;
+      height: 22px;
+      fill: currentColor;
+    }
+    .prono-result {
+      text-align: center;
+      margin-top: 8px;
+      font-size: 0.95rem;
+      color: #4ade80;
+      font-weight: bold;
+    }
+    .btn-save {
+      width: 100%;
+      background-color: #16a34a;
+    }
+    .btn-save:hover {
+      background-color: #15803d;
+    }
+    .empty-msg {
+      text-align: center;
+      color: #64748b;
+      font-style: italic;
+    }
+  </style>
 </head>
 <body>
 
+  <header>
+    <h1>🏆 Pronos Of Champions</h1>
+    <div class="lang-container">
+      <select id="langSelect" class="lang-selector" onchange="changerLangue()">
+        <option value="fr">Français</option>
+        <option value="gb">English</option>
+        <option value="es">Español</option>
+        <option value="de">Deutsch</option>
+        <option value="pt">Português</option>
+      </select>
+    </div>
+  </header>
+
+  <div class="container">
+    
+    <!-- Formulaire d'ajout de match -->
     <div class="card">
-        <!-- Écran de démarrage -->
-        <div id="start-screen" class="screen active">
-            <div class="header-actions">
-                <a href="https://discord.gg/Vpps3rvy2A" target="_blank" rel="noopener noreferrer" class="btn-discord">
-                    <svg viewBox="0 0 127.14 96.36" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a73.57,73.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1,105.25,105.25,0,0,0,32.19-16.14c2.64-27.38-4.51-51.11-18.91-72.15ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74C48.9,40.21,54,45.92,53.84,53,53.84,60,48.8,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74C91.1,40.21,96.19,45.92,96,53,96,60,91,65.69,84.69,65.69Z"/>
-                    </svg>
-                    Discord Quizzy Quiz official group
-                </a>
-
-                <div class="lang-container">
-                    <label for="lang-select" id="txt-lang-label" class="lang-label">🌐 Langue:</label>
-                    <select id="lang-select" class="lang-select" onchange="changeLanguage(this.value)">
-                        <option value="fr" selected>Français 🇫🇷</option>
-                        <option value="en">English 🇬🇧</option>
-                        <option value="es">Español 🇪🇸</option>
-                        <option value="de">Deutsch 🇩🇪</option>
-                        <option value="pt">Português 🇵🇹</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="logo-container">
-                <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="50" cy="50" r="45" fill="#00b4d8" />
-                    <path d="M 50,5 A 45,45 0 0,1 50,95 A 45,45 0 0,1 50,5 Z" fill="none" stroke="#ffffff" stroke-width="3" opacity="0.4" />
-                    <line x1="5" y1="50" x2="95" y2="50" stroke="#ffffff" stroke-width="3" opacity="0.4" />
-                    <path d="M 15,30 Q 50,40 85,30" fill="none" stroke="#ffffff" stroke-width="2.5" opacity="0.4" />
-                    <path d="M 15,70 Q 50,60 85,70" fill="none" stroke="#ffffff" stroke-width="2.5" opacity="0.4" />
-                    <line x1="38" y1="22" x2="38" y2="78" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" />
-                    <path d="M 38,24 L 72,35 L 38,48 Z" fill="#ff4757" stroke="#ffffff" stroke-width="2.5" stroke-linejoin="round" />
-                    <text x="50" y="40" font-family="'Segoe UI', sans-serif" font-weight="900" font-size="14" fill="#ffffff" text-anchor="middle">?</text>
-                </svg>
-                <div class="logo-text">Quizzy <span>Quiz</span></div>
-            </div>
-
-            <!-- Tableau des scores -->
-            <div class="scoreboard">
-                <h3 id="txt-highscores-title">Meilleurs Scores du Jour 🏆</h3>
-                <table class="score-table">
-                    <thead>
-                        <tr>
-                            <th id="txt-th-level">Niveau</th>
-                            <th id="txt-th-score">Meilleur Score</th>
-                        </tr>
-                    </thead>
-                    <tbody id="scores-body"></tbody>
-                </table>
-            </div>
-
-            <p class="instruction-text" id="txt-instruction">Choisis ton niveau (7.5 secondes par question) :</p>
-            <div class="difficulty-container">
-                <button class="btn-diff lvl1" id="btn-lvl1" onclick="selectDifficulty(1)">Niveau 1 : Facile</button>
-                <button class="btn-diff lvl2" id="btn-lvl2" onclick="selectDifficulty(2)">Niveau 2 : Moyen</button>
-                <button class="btn-diff lvl3" id="btn-lvl3" onclick="selectDifficulty(3)">Niveau 3 : Intermédiaire</button>
-                <button class="btn-diff lvl4" id="btn-lvl4" onclick="selectDifficulty(4)">Niveau 4 : Difficile</button>
-                <button class="btn-diff lvl5" id="btn-lvl5" onclick="selectDifficulty(5)">Niveau 5 : Expert</button>
-                <button class="btn-diff lvl6" id="btn-lvl6" onclick="selectDifficulty(6)">Niveau 6 : Ultime</button>
-            </div>
-        </div>
-
-        <!-- Zone de jeu -->
-        <div id="game-screen" class="screen">
-            <h1 id="diff-title" style="color: #1e3c72; font-size: 1.8rem; margin-bottom: 15px;">Quizzy Quiz</h1>
-            <div class="stats">
-                <span><span id="txt-lbl-question">Question</span>: <span id="current-question">1</span>/<span id="total-questions">10</span></span>
-                <span class="timer-display">⏱️ <span id="timer-text">7.5s</span></span>
-                <span><span id="txt-lbl-score">Score</span>: <span id="score">0</span></span>
-            </div>
-            <div class="timer-bar-bg">
-                <div id="timer-bar" class="timer-bar-fill"></div>
-            </div>
-            <div class="flag-container">
-                <img id="flag-image" class="flag-img" src="" alt="Drapeau">
-            </div>
-            <div class="options-grid" id="options-container"></div>
-            <button id="next-btn" class="next-btn" onclick="nextQuestion()">Question Suivante ➔</button>
-        </div>
-
-        <!-- Écran de fin -->
-        <div id="end-screen" class="screen">
-            <h1 id="txt-end-title">Partie terminée ! 🎉</h1>
-            <p style="font-size: 1.3rem; margin: 20px 0 5px 0;" id="txt-your-score">Ton score :</p>
-            <p style="font-size: 3rem; font-weight: bold; color: #1e3c72;" id="final-score">0 / 10</p>
-            <p id="feedback-msg" style="margin: 15px 0 25px 0; font-size: 1.1rem; color: #666;"></p>
-            <button class="restart-btn" id="btn-restart" onclick="showStartScreen()">Retour au Menu 🔄</button>
-        </div>
+      <h2 id="txtAddTitle">+ Ajouter un match</h2>
+      <div class="form-group">
+        <input type="text" id="homeTeamInput" placeholder="Équipe Domicile">
+        <input type="text" id="awayTeamInput" placeholder="Équipe Extérieur">
+        <button class="btn" id="btnAddMatch" onclick="ajouterMatch()">Créer le match</button>
+      </div>
     </div>
 
-    <script>
-        let currentLang = "fr";
+    <!-- Liste des pronostics -->
+    <div class="card">
+      <div class="card-header">
+        <h2 id="txtMyPronos">Mes Pronostics (Saison 2026-2027)</h2>
+        <button class="btn btn-reset" id="btnReset" onclick="reinitialiserScores()">Réinitialiser les scores</button>
+      </div>
+      <div id="listeMatchs"></div>
+    </div>
 
-        const i18n = {
-            fr: {
-                langLabel: "🌐 Langue:",
-                highscoresTitle: "Meilleurs Scores du Jour 🏆",
-                thLevel: "Niveau",
-                thScore: "Meilleur Score",
-                instruction: "Choisis ton niveau (7.5 secondes par question) :",
-                levels: {
-                    1: "Niveau 1 : Facile",
-                    2: "Niveau 2 : Moyen",
-                    3: "Niveau 3 : Intermédiaire",
-                    4: "Niveau 4 : Difficile",
-                    5: "Niveau 5 : Expert",
-                    6: "Niveau 6 : Ultime"
-                },
-                lblQuestion: "Question",
-                lblScore: "Score",
-                btnNext: "Question Suivante ➔",
-                endTitle: "Partie terminée ! 🎉",
-                yourScore: "Ton score :",
-                btnRestart: "Retour au Menu 🔄",
-                fbPerfect: "Score parfait ! Champion ultime de Quizzy Quiz ! 🏆",
-                fbGreat: "Très bon score ! 👏",
-                fbGood: "Pas mal, tu y es presque ! 👍",
-                fbTryAgain: "Entraîne-toi encore un peu ! 🌍"
-            },
-            en: {
-                langLabel: "🌐 Language:",
-                highscoresTitle: "Today's Best Scores 🏆",
-                thLevel: "Level",
-                thScore: "Best Score",
-                instruction: "Choose your level (7.5 seconds per question):",
-                levels: {
-                    1: "Level 1: Easy",
-                    2: "Level 2: Medium",
-                    3: "Level 3: Intermediate",
-                    4: "Level 4: Hard",
-                    5: "Level 5: Expert",
-                    6: "Level 6: Ultimate"
-                },
-                lblQuestion: "Question",
-                lblScore: "Score",
-                btnNext: "Next Question ➔",
-                endTitle: "Game Over! 🎉",
-                yourScore: "Your score:",
-                btnRestart: "Back to Menu 🔄",
-                fbPerfect: "Perfect score! Ultimate Quizzy Quiz Champion! 🏆",
-                fbGreat: "Great score! 👏",
-                fbGood: "Not bad, almost there! 👍",
-                fbTryAgain: "Keep practicing! 🌍"
-            },
-            es: {
-                langLabel: "🌐 Idioma:",
-                highscoresTitle: "Mejores Puntuaciones de Hoy 🏆",
-                thLevel: "Nivel",
-                thScore: "Mejor Puntuación",
-                instruction: "Elige tu nivel (7.5 segundos por pregunta):",
-                levels: {
-                    1: "Nivel 1: Fácil",
-                    2: "Nivel 2: Medio",
-                    3: "Nivel 3: Intermedio",
-                    4: "Nivel 4: Difícil",
-                    5: "Nivel 5: Experto",
-                    6: "Nivel 6: Último"
-                },
-                lblQuestion: "Pregunta",
-                lblScore: "Puntuación",
-                btnNext: "Siguiente Pregunta ➔",
-                endTitle: "¡Juego Terminado! 🎉",
-                yourScore: "Tu puntuación:",
-                btnRestart: "Volver al Menú 🔄",
-                fbPerfect: "¡Puntuación perfecta! ¡Campeón de Quizzy Quiz! 🏆",
-                fbGreat: "¡Excelente puntuación! 👏",
-                fbGood: "¡No está mal, ya casi lo tienes! 👍",
-                fbTryAgain: "¡Sigue practicando! 🌍"
-            },
-            de: {
-                langLabel: "🌐 Sprache:",
-                highscoresTitle: "Heutige Bestleistungen 🏆",
-                thLevel: "Level",
-                thScore: "Bestleistung",
-                instruction: "Wähle dein Level (7,5 Sekunden pro Frage):",
-                levels: {
-                    1: "Level 1: Einfach",
-                    2: "Level 2: Mittel",
-                    3: "Level 3: Fortgeschritten",
-                    4: "Level 4: Schwer",
-                    5: "Level 5: Experte",
-                    6: "Level 6: Ultimativ"
-                },
-                lblQuestion: "Frage",
-                lblScore: "Punkte",
-                btnNext: "Nächste Frage ➔",
-                endTitle: "Spiel vorbei! 🎉",
-                yourScore: "Dein Ergebnis:",
-                btnRestart: "Zurück zum Menü 🔄",
-                fbPerfect: "Perfekte Punktzahl! Ultimativer Quizzy Quiz Champion! 🏆",
-                fbGreat: "Sehr gutes Ergebnis! 👏",
-                fbGood: "Nicht schlecht, fast geschafft! 👍",
-                fbTryAgain: "Übe noch ein bisschen weiter! 🌍"
-            },
-            pt: {
-                langLabel: "🌐 Idioma:",
-                highscoresTitle: "Melhores Pontuações de Hoje 🏆",
-                thLevel: "Nível",
-                thScore: "Melhor Pontuação",
-                instruction: "Escolha o seu nível (7,5 segundos por pergunta):",
-                levels: {
-                    1: "Nível 1: Fácil",
-                    2: "Nível 2: Médio",
-                    3: "Nível 3: Intermédio",
-                    4: "Nível 4: Difícil",
-                    5: "Nível 5: Especialista",
-                    6: "Nível 6: Supremo"
-                },
-                lblQuestion: "Pergunta",
-                lblScore: "Pontuação",
-                btnNext: "Próxima Pergunta ➔",
-                endTitle: "Fim de Jogo! 🎉",
-                yourScore: "A sua pontuação:",
-                btnRestart: "Voltar ao Menu 🔄",
-                fbPerfect: "Pontuação perfeita! Campeão Supremo do Quizzy Quiz! 🏆",
-                fbGreat: "Excelente pontuação! 👏",
-                fbGood: "Nada mau, estás quase lá! 👍",
-                fbTryAgain: "Continua a praticar! 🌍"
-            }
-        };
+  </div>
 
-        const rawFlagsData = [
-            // Level 1
-            { code: "fr", fr: "France", en: "France", es: "Francia", de: "Frankreich", pt: "França", lvl: 1 },
-            { code: "us", fr: "États-Unis", en: "United States", es: "Estados Unidos", de: "Vereinigte Staaten", pt: "Estados Unidos", lvl: 1 },
-            { code: "jp", fr: "Japon", en: "Japan", es: "Japón", de: "Japan", pt: "Japão", lvl: 1 },
-            { code: "ca", fr: "Canada", en: "Canada", es: "Canadá", de: "Kanada", pt: "Canadá", lvl: 1 },
-            { code: "br", fr: "Brésil", en: "Brazil", es: "Brasil", de: "Brasilien", pt: "Brasil", lvl: 1 },
-            { code: "de", fr: "Allemagne", en: "Germany", es: "Alemania", de: "Deutschland", pt: "Alemanha", lvl: 1 },
-            { code: "it", fr: "Italie", en: "Italy", es: "Italia", de: "Italien", pt: "Itália", lvl: 1 },
-            { code: "gb", fr: "Royaume-Uni", en: "United Kingdom", es: "Reino Unido", de: "Vereinigtes Königreich", pt: "Reino Unido", lvl: 1 },
-            { code: "au", fr: "Australie", en: "Australia", es: "Australia", de: "Australien", pt: "Austrália", lvl: 1 },
-            { code: "be", fr: "Belgique", en: "Belgium", es: "Bélgica", de: "Belgien", pt: "Bélgica", lvl: 1 },
-            { code: "ch", fr: "Suisse", en: "Switzerland", es: "Suiza", de: "Schweiz", pt: "Suíça", lvl: 1 },
-            { code: "mx", fr: "Mexique", en: "Mexico", es: "México", de: "Mexiko", pt: "México", lvl: 1 },
-            { code: "ar", fr: "Argentine", en: "Argentina", es: "Argentina", de: "Argentinien", pt: "Argentina", lvl: 1 },
-            { code: "es", fr: "Espagne", en: "Spain", es: "España", de: "Spanien", pt: "Espanha", lvl: 1 },
-            { code: "cn", fr: "Chine", en: "China", es: "China", de: "China", pt: "China", lvl: 1 },
+  <script>
+    const traductions = {
+      fr: {
+        addTitle: "+ Ajouter un match",
+        phHome: "Équipe Domicile",
+        phAway: "Équipe Extérieur",
+        btnCreate: "Créer le match",
+        myPronos: "Mes Pronostics (Saison 2026-2027)",
+        btnReset: "Réinitialiser les scores",
+        btnValidate: "Valider mon pronostic",
+        emptyMsg: "Aucun match programmé.",
+        homeWin: "Victoire Domicile",
+        awayWin: "Victoire Extérieur",
+        draw: "Match Nul",
+        customMatch: "Match Personnalisé",
+        confReset: "Réinitialiser tous les scores de pronostics ?",
+        confDelete: "Voulez-vous supprimer ce match personnalisé ?",
+        alertTeams: "Veuillez remplir les deux équipes.",
+        alertScores: "Entre un score valide pour les deux équipes."
+      },
+      gb: {
+        addTitle: "+ Add a match",
+        phHome: "Home Team",
+        phAway: "Away Team",
+        btnCreate: "Create match",
+        myPronos: "My Predictions (2026-2027 Season)",
+        btnReset: "Reset scores",
+        btnValidate: "Validate my prediction",
+        emptyMsg: "No matches scheduled.",
+        homeWin: "Home Win",
+        awayWin: "Away Win",
+        draw: "Draw",
+        customMatch: "Custom Match",
+        confReset: "Reset all prediction scores?",
+        confDelete: "Do you want to delete this custom match?",
+        alertTeams: "Please fill in both teams.",
+        alertScores: "Enter a valid score for both teams."
+      },
+      es: {
+        addTitle: "+ Añadir un partido",
+        phHome: "Equipo Local",
+        phAway: "Equipo Visitante",
+        btnCreate: "Crear partido",
+        myPronos: "Mis Pronósticos (Temporada 2026-2027)",
+        btnReset: "Reiniciar marcadores",
+        btnValidate: "Validar mi pronóstico",
+        emptyMsg: "No hay partidos programados.",
+        homeWin: "Victoria Local",
+        awayWin: "Victoria Visitante",
+        draw: "Empate",
+        customMatch: "Partido Personalizado",
+        confReset: "¿Reiniciar todos los pronósticos?",
+        confDelete: "¿Deseas eliminar este partido personalizado?",
+        alertTeams: "Por favor, rellena ambos equipos.",
+        alertScores: "Introduce un marcador válido para ambos equipos."
+      },
+      de: {
+        addTitle: "+ Spiel hinzufügen",
+        phHome: "Heimteam",
+        phAway: "Auswärtsteam",
+        btnCreate: "Spiel erstellen",
+        myPronos: "Meine Tipps (Saison 2026-2027)",
+        btnReset: "Ergebnisse zurücksetzen",
+        btnValidate: "Meinen Tipp abgeben",
+        emptyMsg: "Keine Spiele geplant.",
+        homeWin: "Heimsieg",
+        awayWin: "Auswärtssieg",
+        draw: "Unentschieden",
+        customMatch: "Benutzerdefiniertes Spiel",
+        confReset: "Alle Tipp-Ergebnisse zurücksetzen?",
+        confDelete: "Möchten Sie dieses benutzerdefinierte Spiel löschen?",
+        alertTeams: "Bitte füllen Sie beide Teams aus.",
+        alertScores: "Geben Sie für beide Teams ein gültiges Ergebnis ein."
+      },
+      pt: {
+        addTitle: "+ Adicionar um jogo",
+        phHome: "Equipa da Casa",
+        phAway: "Equipa Visitante",
+        btnCreate: "Criar jogo",
+        myPronos: "Os Meus Prognósticos (Época 2026-2027)",
+        btnReset: "Repor resultados",
+        btnValidate: "Validar meu prognóstico",
+        emptyMsg: "Nenhum jogo programado.",
+        homeWin: "Vitória da Casa",
+        awayWin: "Vitória Fora",
+        draw: "Empate",
+        customMatch: "Jogo Personalizado",
+        confReset: "Repor todos os resultados de prognósticos?",
+        confDelete: "Deseja eliminar este jogo personalizado?",
+        alertTeams: "Por favor, preencha ambas as equipas.",
+        alertScores: "Insira um resultado válido para ambas as equipas."
+      }
+    };
 
-            // Level 2
-            { code: "pt", fr: "Portugal", en: "Portugal", es: "Portugal", de: "Portugal", pt: "Portugal", lvl: 2 },
-            { code: "in", fr: "Inde", en: "India", es: "India", de: "Indien", pt: "Índia", lvl: 2 },
-            { code: "kr", fr: "Corée du Sud", en: "South Korea", es: "Corea del Sur", de: "Südkorea", pt: "Coreia do Sul", lvl: 2 },
-            { code: "eg", fr: "Égypte", en: "Egypt", es: "Egipto", de: "Ägypten", pt: "Egipto", lvl: 2 },
-            { code: "ma", fr: "Maroc", en: "Morocco", es: "Marruecos", de: "Marokko", pt: "Marrocos", lvl: 2 },
-            { code: "gr", fr: "Grèce", en: "Greece", es: "Grecia", de: "Griechenland", pt: "Grécia", lvl: 2 },
-            { code: "se", fr: "Suède", en: "Sweden", es: "Suecia", de: "Schweden", pt: "Suécia", lvl: 2 },
-            { code: "za", fr: "Afrique du Sud", en: "South Africa", es: "Sudáfrica", de: "Südafrika", pt: "África do Sul", lvl: 2 },
-            { code: "no", fr: "Norvège", en: "Norway", es: "Noruega", de: "Norwegen", pt: "Noruega", lvl: 2 },
-            { code: "fi", fr: "Finlande", en: "Finland", es: "Finlandia", de: "Finnland", pt: "Finlândia", lvl: 2 },
-            { code: "dk", fr: "Danemark", en: "Denmark", es: "Dinamarca", de: "Dänemark", pt: "Dinamarca", lvl: 2 },
-            { code: "cl", fr: "Chili", en: "Chile", es: "Chile", de: "Chile", pt: "Chile", lvl: 2 },
-            { code: "dz", fr: "Algérie", en: "Algeria", es: "Argelia", de: "Algerien", pt: "Algélia", lvl: 2 },
-            { code: "co", fr: "Colombie", en: "Colombia", es: "Colombia", de: "Kolumbien", pt: "Colômbia", lvl: 2 },
-            { code: "nl", fr: "Pays-Bas", en: "Netherlands", es: "Países Bajos", de: "Niederlande", pt: "Países Baixos", lvl: 2 },
-            { code: "pl", fr: "Pologne", en: "Poland", es: "Polonia", de: "Polen", pt: "Polónia", lvl: 2 },
-            { code: "tr", fr: "Turquie", en: "Turkey", es: "Turquía", de: "Türkei", pt: "Turquia", lvl: 2 },
+    let langueActuelle = localStorage.getItem('foot_pronos_lang') || 'fr';
+    document.getElementById('langSelect').value = langueActuelle;
 
-            // Level 3
-            { code: "pe", fr: "Pérou", en: "Peru", es: "Perú", de: "Peru", pt: "Peru", lvl: 3 },
-            { code: "th", fr: "Thaïlande", en: "Thailand", es: "Tailandia", de: "Thailand", pt: "Tailândia", lvl: 3 },
-            { code: "vn", fr: "Viêt Nam", en: "Vietnam", es: "Vietnam", de: "Vietnam", pt: "Vietnã", lvl: 3 },
-            { code: "sn", fr: "Sénégal", en: "Senegal", es: "Senegal", de: "Senegal", pt: "Senegal", lvl: 3 },
-            { code: "ro", fr: "Roumanie", en: "Romania", es: "Rumania", de: "Rumänien", pt: "Roménia", lvl: 3 },
-            { code: "ke", fr: "Kenya", en: "Kenya", es: "Kenia", de: "Kenia", pt: "Quénia", lvl: 3 },
-            { code: "uy", fr: "Uruguay", en: "Uruguay", es: "Uruguay", de: "Uruguay", pt: "Uruguai", lvl: 3 },
-            { code: "cu", fr: "Cuba", en: "Cuba", es: "Cuba", de: "Kuba", pt: "Cuba", lvl: 3 },
-            { code: "nz", fr: "Nouvelle-Zélande", en: "New Zealand", es: "Nueva Zelanda", de: "Neuseeland", pt: "Nova Zelândia", lvl: 3 },
-            { code: "ua", fr: "Ukraine", en: "Ukraine", es: "Ucrania", de: "Ukraine", pt: "Ucrânia", lvl: 3 },
-            { code: "cz", fr: "Tchéquie", en: "Czechia", es: "República Checa", de: "Tschechien", pt: "Chéquia", lvl: 3 },
-            { code: "hu", fr: "Hongrie", en: "Hungary", es: "Hungría", de: "Ungarn", pt: "Hungria", lvl: 3 },
-            { code: "at", fr: "Autriche", en: "Austria", es: "Austria", de: "Österreich", pt: "Áustria", lvl: 3 },
-            { code: "hr", fr: "Croatie", en: "Croatia", es: "Croacia", de: "Kroatien", pt: "Croácia", lvl: 3 },
-            { code: "ie", fr: "Irlande", en: "Ireland", es: "Irlanda", de: "Irland", pt: "Irlanda", lvl: 3 },
-            { code: "is", fr: "Islande", en: "Iceland", es: "Islandia", de: "Island", pt: "Islândia", lvl: 3 },
-            { code: "tn", fr: "Tunisie", en: "Tunisia", es: "Túnez", de: "Tunesien", pt: "Tunísia", lvl: 3 },
+    function changerLangue() {
+      langueActuelle = document.getElementById('langSelect').value;
+      localStorage.setItem('foot_pronos_lang', langueActuelle);
+      mettreAJourTextesStatiques();
+      afficherMatchs();
+    }
 
-            // Level 4
-            { code: "bh", fr: "Bahreïn", en: "Bahrain", es: "Baréin", de: "Bahrain", pt: "Bahrein", lvl: 4 },
-            { code: "bt", fr: "Bhoutan", en: "Bhutan", es: "Bután", de: "Bhutan", pt: "Butão", lvl: 4 },
-            { code: "kg", fr: "Kirghizistan", en: "Kyrgyzstan", es: "Kirguistán", de: "Kirgisistan", pt: "Quirguizistão", lvl: 4 },
-            { code: "ls", fr: "Lesotho", en: "Lesotho", es: "Lesoto", de: "Lesotho", pt: "Lesoto", lvl: 4 },
-            { code: "mw", fr: "Malawi", en: "Malawi", es: "Malaui", de: "Malawi", pt: "Maláui", lvl: 4 },
-            { code: "nr", fr: "Nauru", en: "Nauru", es: "Nauru", de: "Nauru", pt: "Nauru", lvl: 4 },
-            { code: "pw", fr: "Palaos", en: "Palau", es: "Palaos", de: "Palau", pt: "Palau", lvl: 4 },
-            { code: "sr", fr: "Suriname", en: "Suriname", es: "Surinam", de: "Suriname", pt: "Suriname", lvl: 4 },
-            { code: "sz", fr: "Eswatini", en: "Eswatini", es: "Esuatini", de: "Eswatini", pt: "Eswatini", lvl: 4 },
-            { code: "tv", fr: "Tuvalu", en: "Tuvalu", es: "Tuvalu", de: "Tuvalu", pt: "Tuvalu", lvl: 4 },
-            { code: "vu", fr: "Vanuatu", en: "Vanuatu", es: "Vanuatu", de: "Vanuatu", pt: "Vanuatu", lvl: 4 },
-            { code: "km", fr: "Comores", en: "Comoros", es: "Comoras", de: "Komoren", pt: "Comores", lvl: 4 },
-            { code: "cm", fr: "Cameroun", en: "Cameroon", es: "Camerún", de: "Kamerun", pt: "Camarões", lvl: 4 },
-            { code: "ec", fr: "Équateur", en: "Ecuador", es: "Ecuador", de: "Ecuador", pt: "Equador", lvl: 4 },
-            { code: "jm", fr: "Jamaïque", en: "Jamaica", es: "Jamaica", de: "Jamaika", pt: "Jamaica", lvl: 4 },
-            { code: "mn", fr: "Mongolie", en: "Mongolia", es: "Mongolia", de: "Mongolei", pt: "Mongólia", lvl: 4 },
-            { code: "sk", fr: "Slovaquie", en: "Slovakia", es: "Eslovaquia", de: "Slowakei", pt: "Eslováquia", lvl: 4 },
+    function mettreAJourTextesStatiques() {
+      const t = traductions[langueActuelle];
+      document.getElementById('txtAddTitle').innerText = t.addTitle;
+      document.getElementById('homeTeamInput').placeholder = t.phHome;
+      document.getElementById('awayTeamInput').placeholder = t.phAway;
+      document.getElementById('btnAddMatch').innerText = t.btnCreate;
+      document.getElementById('txtMyPronos').innerText = t.myPronos;
+      document.getElementById('btnReset').innerText = t.btnReset;
+    }
 
-            // Level 5
-            { code: "ad", fr: "Andorre", en: "Andorra", es: "Andorra", de: "Andorra", pt: "Andorra", lvl: 5 },
-            { code: "bz", fr: "Belize", en: "Belize", es: "Belice", de: "Belize", pt: "Belize", lvl: 5 },
-            { code: "li", fr: "Liechtenstein", en: "Liechtenstein", es: "Liechtenstein", de: "Liechtenstein", pt: "Liechtenstein", lvl: 5 },
-            { code: "sm", fr: "Saint-Marin", en: "San Marino", es: "San Marino", de: "San Marino", pt: "San Marino", lvl: 5 },
-            { code: "st", fr: "Sao Tomé-et-Principe", en: "Sao Tome and Principe", es: "Santo Tomé y Príncipe", de: "São Tomé und Príncipe", pt: "São Tomé e Príncipe", lvl: 5 },
-            { code: "sc", fr: "Seychelles", en: "Seychelles", es: "Seychelles", de: "Seychellen", pt: "Seicheles", lvl: 5 },
-            { code: "dm", fr: "Dominique", en: "Dominica", es: "Dominica", de: "Dominica", pt: "Dominica", lvl: 5 },
-            { code: "ki", fr: "Kiribati", en: "Kiribati", es: "Kiribati", de: "Kiribati", pt: "Kiribati", lvl: 5 },
-            { code: "ag", fr: "Antigua-et-Barbuda", en: "Antigua and Barbuda", es: "Antigua y Barbuda", de: "Antigua und Barbuda", pt: "Antígua e Barbuda", lvl: 5 },
-            { code: "kn", fr: "Saint-Kitts-et-Nevis", en: "Saint Kitts and Nevis", es: "San Cristóbal y Nieves", de: "St. Kitts und Nevis", pt: "São Cristóvão e Neves", lvl: 5 },
-            { code: "fm", fr: "Micronésie", en: "Micronesia", es: "Micronesia", de: "Mikronesien", pt: "Micronésia", lvl: 5 },
-            { code: "to", fr: "Tonga", en: "Tonga", es: "Tonga", de: "Tonga", pt: "Tonga", lvl: 5 },
-            { code: "cv", fr: "Cap-Vert", en: "Cape Verde", es: "Cabo Verde", de: "Kap Verde", pt: "Cabo Verde", lvl: 5 },
-            { code: "dj", fr: "Djibouti", en: "Djibouti", es: "Yibuti", de: "Dschibuti", pt: "Djibuti", lvl: 5 },
-            { code: "ws", fr: "Samoa", en: "Samoa", es: "Samoa", de: "Samoa", pt: "Samoa", lvl: 5 },
-            { code: "sl", fr: "Sierra Leone", en: "Sierra Leone", es: "Sierra Leona", de: "Sierra Leone", pt: "Serra Leoa", lvl: 5 },
-            { code: "tl", fr: "Timor oriental", en: "East Timor", es: "Timor Oriental", de: "Osttimor", pt: "Timor-Leste", lvl: 5 }
-        ];
+    const laskSvgHtml = `
+      <svg class="lask-logo-svg" viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10,10 H190 V150 C190,200 100,230 100,230 C100,230 10,200 10,150 Z" fill="none" stroke="#ffffff" stroke-width="12"/>
+        <text x="100" y="70" font-family="Arial, sans-serif" font-weight="bold" font-size="46" text-anchor="middle" fill="#ffffff">LASK</text>
+        <rect x="35" y="95" width="22" height="95" fill="#000000"/>
+        <rect x="68" y="95" width="22" height="95" fill="#000000"/>
+        <rect x="110" y="95" width="22" height="95" fill="#000000"/>
+        <rect x="143" y="95" width="22" height="95" fill="#000000"/>
+      </svg>
+    `;
 
-        const TIMER_DURATION = 7.5;
-        let currentDifficulty = 1;
-        let totalQuestions = 10;
-        let currentQuestionIndex = 0;
-        let score = 0;
-        let gameQuestions = [];
-        let currentCorrectAnswer = null;
-        let timerInterval = null;
-        let timeLeft = 0;
+    const sabahSvgHtml = `
+      <svg class="sabah-logo-svg" viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10,10 H190 V150 C190,200 100,230 100,230 C100,230 10,200 10,150 Z" fill="#1e293b" stroke="#e64980" stroke-width="10"/>
+        <path d="M10,10 H190 V85 H10 Z" fill="#e64980"/>
+        <path d="M100,10 L40,85 H60 L100,35 L140,85 H160 Z" fill="#1e293b"/>
+        <rect x="10" y="85" width="180" height="65" fill="#1e293b" stroke="#e64980" stroke-width="6"/>
+        <text x="100" y="132" font-family="Arial, sans-serif" font-weight="bold" font-size="44" text-anchor="middle" fill="#e64980" letter-spacing="2">SABAH</text>
+        <path d="M10,150 H190 V200 C190,200 100,230 100,230 C100,230 10,200 10,150 Z" fill="#1e293b"/>
+        <circle cx="72" cy="180" r="14" fill="none" stroke="#e64980" stroke-width="5"/>
+        <circle cx="128" cy="180" r="14" fill="none" stroke="#e64980" stroke-width="5"/>
+        <polygon points="100,195 95,205 105,205" fill="#e64980"/>
+        <text x="100" y="222" font-family="Arial, sans-serif" font-weight="bold" font-size="14" text-anchor="middle" fill="#e64980">2017</text>
+      </svg>
+    `;
 
-        function getLocalizedDatasets() {
-            const datasets = { 1: [], 2: [], 3: [], 4: [], 5: [] };
-            const seenCodes = new Set();
+    const iconeCorbeilleHtml = `
+      <svg viewBox="0 0 24 24">
+        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+      </svg>
+    `;
 
-            rawFlagsData.forEach(item => {
-                if (!seenCodes.has(item.code)) {
-                    seenCodes.add(item.code);
-                    const flagObj = { code: item.code, name: item[currentLang] || item.en };
-                    if (datasets[item.lvl]) {
-                        datasets[item.lvl].push(flagObj);
-                    }
-                }
-            });
+    const matchsParDefaut = [
+      { id: 5001, dateHeure: "17/09/2026 - 21:00", dom: "Arsenal", logoDom: "https://ssl.gstatic.com/onebox/media/sports/logos/optimized/4us2nCgl6kgZc0t3hpW75Q_500x500.png", ext: "Lille", logoExt: "https://ssl.gstatic.com/onebox/media/sports/logos/optimized/D2AQe8qoyPIP4K8MzLvwuA_500x500.png", competition: "Ligue des Champions", scoreDom: "", scoreExt: "" },
+      { id: 5002, dateHeure: "17/09/2026 - 21:00", dom: "Galatasaray", logoDom: "https://ssl.gstatic.com/onebox/media/sports/logos/optimized/TWjoccvTU4JXZJZ3aW3cVg_500x500.png", ext: "Barcelone", logoExt: "https://ssl.gstatic.com/onebox/media/sports/logos/optimized/paYnEE8hcrP96neHRNofhQ_500x500.png", competition: "Ligue des Champions", scoreDom: "", scoreExt: "" },
+      { id: 5003, dateHeure: "18/09/2026 - 21:00", dom: "Manchester City", logoDom: "https://ssl.gstatic.com/onebox/media/sports/logos/optimized/z44l-a0W1v5FmgPnemV6Xw_500x500.png", ext: "PSG", logoExt: "https://ssl.gstatic.com/onebox/media/sports/logos/optimized/mcpMspef1hwHwi9qrfp4YQ_500x500.png", competition: "Ligue des Champions", scoreDom: "", scoreExt: "" },
+      { id: 5004, dateHeure: "18/09/2026 - 18:45", dom: "AS Rome", logoDom: "https://ssl.gstatic.com/onebox/media/sports/logos/optimized/BQdP4jUBFJfG7U_JBsFIMg_500x500.png", ext: "Real Madrid", logoExt: "https://ssl.gstatic.com/onebox/media/sports/logos/optimized/wHU2LUw4ApkPyemQp1-XFA_500x500.png", competition: "Ligue des Champions", scoreDom: "", scoreExt: "" },
+      { id: 5005, dateHeure: "19/09/2026 - 21:00", dom: "LASK", logoType: "custom-lask", ext: "Liverpool", logoExt: "https://ssl.gstatic.com/onebox/media/sports/logos/optimized/nGfV05dipbAc7zzojivKew_500x500.png", competition: "Ligue des Champions", scoreDom: "", scoreExt: "" },
+      { id: 5006, dateHeure: "19/09/2026 - 18:45", dom: "Dortmund", logoDom: "https://ssl.gstatic.com/onebox/media/sports/logos/optimized/FZnTSH2rbHFos4BnlWAItw_500x500.png", ext: "Sabah FC", logoTypeExt: "custom-sabah", competition: "Ligue des Champions", scoreDom: "", scoreExt: "" },
+      { id: 5007, dateHeure: "20/09/2026 - 21:00", dom: "PSG", logoDom: "https://ssl.gstatic.com/onebox/media/sports/logos/optimized/mcpMspef1hwHwi9qrfp4YQ_500x500.png", ext: "Barcelone", logoExt: "https://ssl.gstatic.com/onebox/media/sports/logos/optimized/paYnEE8hcrP96neHRNofhQ_500x500.png", competition: "Ligue des Champions", scoreDom: "", scoreExt: "" },
+      { id: 5008, dateHeure: "20/09/2026 - 21:00", dom: "Bayern Munich", logoDom: "https://ssl.gstatic.com/onebox/media/sports/logos/optimized/-_cmntP5q_pHL7g5LfkRiw_500x500.png", ext: "Arsenal", logoExt: "https://ssl.gstatic.com/onebox/media/sports/logos/optimized/4us2nCgl6kgZc0t3hpW75Q_500x500.png", competition: "Ligue des Champions", scoreDom: "", scoreExt: "" },
+      { id: 5009, dateHeure: "21/09/2026 - 21:00", dom: "Real Madrid", logoDom: "https://ssl.gstatic.com/onebox/media/sports/logos/optimized/wHU2LUw4ApkPyemQp1-XFA_500x500.png", ext: "RB Leipzig", logoExt: "https://ssl.gstatic.com/onebox/media/sports/logos/optimized/R7-Lqc_SDxd97uWgoeUQ-g_500x500.png", competition: "Ligue des Champions", scoreDom: "", scoreExt: "" }
+    ];
 
-            const allFlags = [...datasets[1], ...datasets[2], ...datasets[3], ...datasets[4], ...datasets[5]];
-            datasets[6] = allFlags;
-            return { datasets, allFlags };
+    let matchs = JSON.parse(localStorage.getItem('foot_pronos_2026_v28')) || matchsParDefaut;
+
+    function sauvegarderLocal() {
+      localStorage.setItem('foot_pronos_2026_v28', JSON.stringify(matchs));
+    }
+
+    function reinitialiserScores() {
+      const t = traductions[langueActuelle];
+      if (confirm(t.confReset)) {
+        matchs = matchs.map(m => ({ ...m, scoreDom: "", scoreExt: "" }));
+        sauvegarderLocal();
+        afficherMatchs();
+      }
+    }
+
+    function gererErreurLogo(imgElement, nomEquipe) {
+      const parent = imgElement.parentElement;
+      const initiales = nomEquipe.substring(0, 3).toUpperCase();
+      parent.innerHTML = `<div style="width:40px; height:40px; background:#334155; color:#38bdf8; display:flex; align-items:center; justify-content:center; border-radius:50%; font-weight:bold; font-size:0.8rem;">${initiales}</div>`;
+    }
+
+    function ajouterMatch() {
+      const t = traductions[langueActuelle];
+      const domInput = document.getElementById('homeTeamInput');
+      const extInput = document.getElementById('awayTeamInput');
+
+      const domName = domInput.value.trim();
+      const extName = extInput.value.trim();
+
+      if (!domName || !extName) {
+        alert(t.alertTeams);
+        return;
+      }
+
+      const maintenant = new Date();
+      const optionsDate = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+      const dateFormatee = maintenant.toLocaleDateString('fr-FR', optionsDate).replace(',', ' -');
+
+      const nouveauMatch = {
+        id: Date.now(),
+        dateHeure: dateFormatee,
+        dom: domName,
+        logoDom: `https://logo.clearbit.com/${domName.toLowerCase().replace(/\s+/g, '')}.com`,
+        ext: extName,
+        logoExt: `https://logo.clearbit.com/${extName.toLowerCase().replace(/\s+/g, '')}.com`,
+        competition: "Match Personnalisé",
+        scoreDom: "",
+        scoreExt: ""
+      };
+
+      matchs.push(nouveauMatch);
+      sauvegarderLocal();
+
+      domInput.value = "";
+      extInput.value = "";
+
+      afficherMatchs();
+    }
+
+    function supprimerMatch(id) {
+      const t = traductions[langueActuelle];
+      if (confirm(t.confDelete)) {
+        matchs = matchs.filter(m => m.id !== id);
+        sauvegarderLocal();
+        afficherMatchs();
+      }
+    }
+
+    function enregistrerScore(id) {
+      const t = traductions[langueActuelle];
+      const valDom = document.getElementById(`score-dom-${id}`).value;
+      const valExt = document.getElementById(`score-ext-${id}`).value;
+
+      if (valDom === "" || valExt === "") {
+        alert(t.alertScores);
+        return;
+      }
+
+      const match = matchs.find(m => m.id === id);
+      if (match) {
+        match.scoreDom = valDom;
+        match.scoreExt = valExt;
+        sauvegarderLocal();
+        afficherMatchs();
+      }
+    }
+
+    function obtenirTendance(sDom, sExt) {
+      const t = traductions[langueActuelle];
+      const d = parseInt(sDom);
+      const e = parseInt(sExt);
+      if (d > e) return t.homeWin;
+      if (e > d) return t.awayWin;
+      return t.draw;
+    }
+
+    function afficherMatchs() {
+      const t = traductions[langueActuelle];
+      const container = document.getElementById('listeMatchs');
+      container.innerHTML = '';
+
+      if (matchs.length === 0) {
+        container.innerHTML = `<p class="empty-msg">${t.emptyMsg}</p>`;
+        return;
+      }
+
+      matchs.forEach(m => {
+        const item = document.createElement('div');
+        item.className = 'match-card';
+
+        const estValide = m.scoreDom !== "" && m.scoreExt !== "";
+        const tendance = estValide ? obtenirTendance(m.scoreDom, m.scoreExt) : "";
+        const estPersonnalise = m.competition === "Match Personnalisé";
+        const nomCompetition = estPersonnalise ? t.customMatch : m.competition;
+
+        let htmlLogoDom = '';
+        if (m.logoType === 'custom-lask') {
+          htmlLogoDom = laskSvgHtml;
+        } else {
+          htmlLogoDom = `<img class="team-logo" src="${m.logoDom}" alt="Logo ${m.dom}" onerror="gererErreurLogo(this, '${m.dom}')">`;
         }
 
-        function changeLanguage(lang) {
-            currentLang = lang;
-            updateStaticText();
-            renderHighScores();
+        let htmlLogoExt = '';
+        if (m.logoTypeExt === 'custom-sabah') {
+          htmlLogoExt = sabahSvgHtml;
+        } else {
+          htmlLogoExt = `<img class="team-logo" src="${m.logoExt}" alt="Logo ${m.ext}" onerror="gererErreurLogo(this, '${m.ext}')">`;
         }
 
-        function updateStaticText() {
-            const txt = i18n[currentLang];
-            document.getElementById('txt-lang-label').textContent = txt.langLabel;
-            document.getElementById('txt-highscores-title').textContent = txt.highscoresTitle;
-            document.getElementById('txt-th-level').textContent = txt.thLevel;
-            document.getElementById('txt-th-score').textContent = txt.thScore;
-            document.getElementById('txt-instruction').textContent = txt.instruction;
+        item.innerHTML = `
+          <div class="match-meta">
+            <span class="match-datetime">${m.dateHeure || ""}</span>
+            <span class="competition-badge">${nomCompetition}</span>
+          </div>
 
-            for (let i = 1; i <= 6; i++) {
-                document.getElementById(`btn-lvl${i}`).textContent = txt.levels[i];
-            }
+          <div class="teams-header">
+            <div class="team-box">
+              <span class="team-name">${m.dom}</span>
+              <div class="team-logo-container">
+                ${htmlLogoDom}
+              </div>
+            </div>
 
-            document.getElementById('txt-lbl-question').textContent = txt.lblQuestion;
-            document.getElementById('txt-lbl-score').textContent = txt.lblScore;
-            document.getElementById('next-btn').textContent = txt.btnNext;
-            document.getElementById('txt-end-title').textContent = txt.endTitle;
-            document.getElementById('txt-your-score').textContent = txt.yourScore;
-            document.getElementById('btn-restart').textContent = txt.btnRestart;
-        }
+            <span class="vs">VS</span>
 
-        function getGameDateKey() {
-            const now = new Date();
-            if (now.getHours() < 7) {
-                now.setDate(now.getDate() - 1);
-            }
-            return now.toISOString().split('T')[0];
-        }
+            <div class="team-box">
+              <span class="team-name">${m.ext}</span>
+              <div class="team-logo-container">
+                ${htmlLogoExt}
+              </div>
+            </div>
+          </div>
 
-        function checkDailyReset() {
-            const currentDateKey = getGameDateKey();
-            const lastSavedDate = sessionStorage.getItem('quizzy_game_date');
+          <div class="match-middle-row">
+            <div class="inputs-score">
+              <input type="number" min="0" max="20" class="input-score" id="score-dom-${m.id}" value="${m.scoreDom}" placeholder="-">
+              <span style="font-weight: bold; font-size: 1.2rem;">-</span>
+              <input type="number" min="0" max="20" class="input-score" id="score-ext-${m.id}" value="${m.scoreExt}" placeholder="-">
+            </div>
+            ${estPersonnalise ? `
+              <button class="btn-delete" onclick="supprimerMatch(${m.id})" title="Supprimer">
+                ${iconeCorbeilleHtml}
+              </button>
+            ` : ''}
+          </div>
 
-            if (lastSavedDate !== currentDateKey) {
-                clearScores();
-                sessionStorage.setItem('quizzy_game_date', currentDateKey);
-            }
-        }
+          <div class="actions">
+            <button class="btn btn-save" onclick="enregistrerScore(${m.id})">${t.btnValidate}</button>
+          </div>
 
-        function clearScores() {
-            for (let i = 1; i <= 6; i++) {
-                sessionStorage.removeItem(`quizzy_best_lvl${i}`);
-            }
-        }
+          ${estValide ? `<div class="prono-result">${tendance}</div>` : ''}
+        `;
 
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
-        }
+        container.appendChild(item);
+      });
+    }
 
-        function showStartScreen() {
-            clearInterval(timerInterval);
-            renderHighScores();
-            showScreen('start-screen');
-        }
+    mettreAJourTextesStatiques();
+    afficherMatchs();
+  </script>
 
-        function renderHighScores() {
-            checkDailyReset();
-            const tbody = document.getElementById('scores-body');
-            tbody.innerHTML = '';
-
-            const txt = i18n[currentLang];
-            const { datasets } = getLocalizedDatasets();
-
-            for (let i = 1; i <= 6; i++) {
-                const maxLvlScore = (i === 6) ? datasets[6].length : 10;
-                const savedScore = sessionStorage.getItem(`quizzy_best_lvl${i}`);
-                const scoreDisplay = savedScore !== null ? `${savedScore} / ${maxLvlScore}` : '-';
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><strong>${txt.levels[i]}</strong></td>
-                    <td>${scoreDisplay}</td>
-                `;
-                tbody.appendChild(tr);
-            }
-        }
-
-        function selectDifficulty(diff) {
-            currentDifficulty = diff;
-            const lvlName = i18n[currentLang].levels[diff];
-            document.getElementById('diff-title').textContent = `Quizzy Quiz - ${lvlName}`;
-            startGame();
-        }
-
-        function startGame() {
-            score = 0;
-            currentQuestionIndex = 0;
-            
-            const { datasets } = getLocalizedDatasets();
-            totalQuestions = (currentDifficulty === 6) ? datasets[6].length : 10;
-
-            document.getElementById('score').textContent = score;
-            document.getElementById('total-questions').textContent = totalQuestions;
-            
-            const pool = datasets[currentDifficulty];
-            gameQuestions = [...pool].sort(() => 0.5 - Math.random()).slice(0, totalQuestions);
-            
-            showScreen('game-screen');
-            loadQuestion();
-        }
-
-        function loadQuestion() {
-            clearInterval(timerInterval);
-            document.getElementById('next-btn').style.display = 'none';
-            document.getElementById('current-question').textContent = currentQuestionIndex + 1;
-            
-            const { allFlags } = getLocalizedDatasets();
-            currentCorrectAnswer = gameQuestions[currentQuestionIndex];
-            document.getElementById('flag-image').src = `https://flagcdn.com/w320/${currentCorrectAnswer.code}.png`;
-
-            const wrongOptions = allFlags
-                .filter(c => c.code !== currentCorrectAnswer.code)
-                .sort(() => 0.5 - Math.random())
-                .slice(0, 3);
-
-            const options = [...wrongOptions, currentCorrectAnswer].sort(() => 0.5 - Math.random());
-            const optionsContainer = document.getElementById('options-container');
-            optionsContainer.innerHTML = '';
-
-            options.forEach(option => {
-                const button = document.createElement('button');
-                button.classList.add('btn');
-                button.textContent = option.name;
-                button.onclick = () => checkAnswer(button, option.code);
-                optionsContainer.appendChild(button);
-            });
-
-            startTimer();
-        }
-
-        function startTimer() {
-            timeLeft = TIMER_DURATION;
-            const timerBar = document.getElementById('timer-bar');
-            const timerText = document.getElementById('timer-text');
-            
-            timerBar.style.width = '100%';
-            timerText.textContent = `${timeLeft.toFixed(1)}s`;
-
-            const intervalStep = 100;
-            timerInterval = setInterval(() => {
-                timeLeft -= intervalStep / 1000;
-                
-                if (timeLeft > 0) {
-                    timerText.textContent = `${timeLeft.toFixed(1)}s`;
-                } else {
-                    timerText.textContent = '0.0s';
-                }
-
-                const percentage = Math.max(0, (timeLeft / TIMER_DURATION) * 100);
-                timerBar.style.width = `${percentage}%`;
-
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    handleTimeout();
-                }
-            }, intervalStep);
-        }
-
-        function handleTimeout() {
-            disableButtons();
-            revealCorrectAnswer();
-            showNextOrEnd();
-        }
-
-        function triggerConfetti(buttonElement) {
-            const colors = ['#28a745', '#00b4d8', '#ffc107', '#ff4757', '#ffffff'];
-            const rect = buttonElement.getBoundingClientRect();
-            const parentRect = buttonElement.parentElement.getBoundingClientRect();
-            
-            const centerX = (rect.left + rect.width / 2) - parentRect.left;
-            const centerY = (rect.top + rect.height / 2) - parentRect.top;
-
-            for (let i = 0; i < 24; i++) {
-                const confetti = document.createElement('div');
-                confetti.classList.add('confetti');
-                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                
-                confetti.style.left = `${centerX}px`;
-                confetti.style.top = `${centerY}px`;
-
-                const angle = Math.random() * Math.PI * 2;
-                const distance = 40 + Math.random() * 70;
-                const tx = Math.cos(angle) * distance;
-                const ty = Math.sin(angle) * distance;
-
-                confetti.style.setProperty('--tx', `${tx}px`);
-                confetti.style.setProperty('--ty', `${ty}px`);
-
-                buttonElement.parentElement.appendChild(confetti);
-
-                setTimeout(() => {
-                    confetti.remove();
-                }, 600);
-            }
-        }
-
-        function checkAnswer(selectedBtn, selectedCode) {
-            clearInterval(timerInterval);
-            disableButtons();
-
-            if (selectedCode === currentCorrectAnswer.code) {
-                selectedBtn.classList.add('correct');
-                score++;
-                document.getElementById('score').textContent = score;
-                triggerConfetti(selectedBtn);
-            } else {
-                selectedBtn.classList.add('wrong');
-                revealCorrectAnswer();
-            }
-
-            showNextOrEnd();
-        }
-
-        function disableButtons() {
-            document.querySelectorAll('.options-grid .btn').forEach(btn => btn.disabled = true);
-        }
-
-        function revealCorrectAnswer() {
-            document.querySelectorAll('.options-grid .btn').forEach(btn => {
-                if (btn.textContent === currentCorrectAnswer.name) {
-                    btn.classList.add('correct');
-                }
-            });
-        }
-
-        function showNextOrEnd() {
-            if (currentQuestionIndex < totalQuestions - 1) {
-                document.getElementById('next-btn').style.display = 'block';
-            } else {
-                setTimeout(showEndScreen, 1500);
-            }
-        }
-
-        function saveHighScore() {
-            checkDailyReset();
-            const storageKey = `quizzy_best_lvl${currentDifficulty}`;
-            const bestScore = sessionStorage.getItem(storageKey) || 0;
-            
-            if (score > Number(bestScore)) {
-                sessionStorage.setItem(storageKey, score);
-            }
-        }
-
-        function showEndScreen() {
-            clearInterval(timerInterval);
-            saveHighScore();
-            
-            showScreen('end-screen');
-            document.getElementById('final-score').textContent = `${score} / ${totalQuestions}`;
-
-            const ratio = score / totalQuestions;
-            const feedback = document.getElementById('feedback-msg');
-            const txt = i18n[currentLang];
-            
-            if (ratio === 1) feedback.textContent = txt.fbPerfect;
-            else if (ratio >= 0.7) feedback.textContent = txt.fbGreat;
-            else if (ratio >= 0.5) feedback.textContent = txt.fbGood;
-            else feedback.textContent = txt.fbTryAgain;
-        }
-
-        function nextQuestion() {
-            currentQuestionIndex++;
-            loadQuestion();
-        }
-
-        // Init
-        updateStaticText();
-        renderHighScores();
-    </script>
 </body>
 </html>
